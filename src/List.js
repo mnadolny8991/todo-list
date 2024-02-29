@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import Task from './Task'
+import Task from './Task';
+import TaskForm from './TaskForm';
 
 const statuses = ['Planned', 'In Progress', 'Complete'];
 const initialTasks = [
@@ -41,7 +42,7 @@ const initialTasks = [
     }
 ]
 
-let id = 5;
+let id = 6; 
 
 function List() {
     const [status, setStatus] = useState('planned');
@@ -73,31 +74,31 @@ function List() {
 
     function handleSubmit(e) {
         e.preventDefault();
-        console.log(inputTask);
-        setTasks([...tasks, inputTask]);
+        setTasks([...tasks, {...inputTask, id: id++}]);
         setStatus('planned');
     }
 
-    function handleInputChange(e) {
+    function handleDateChange(e) {
         const val = String(e.target.value);
-        const name = e.target.name;
-        if (name === 'date') {
-            const date = val.split('-');
-            let newDate = new Date(inputTask.due);
-            newDate.setFullYear(date[0]);
-            newDate.setMonth(date[1]);
-            newDate.setDate(date[2]);
-            setInputTask({ ...inputTask, due: newDate })
-        }
-        if (name === 'time') {
-            const time = val.split(':');
-            let newDate = new Date(inputTask.due);
-            newDate.setHours(time[0], time[1]);
-            setInputTask({ ...inputTask, due: newDate });
-        }
-        if (name === 'description') {
-            setInputTask({ ...inputTask, description: val })
-        }
+        const date = val.split('-');
+        let newDate = new Date(inputTask.due);
+        newDate.setFullYear(date[0]);
+        newDate.setMonth(date[1]);
+        newDate.setDate(date[2]);
+        setInputTask({ ...inputTask, due: newDate })
+    }
+
+    function handleTimeChange(e) {
+        const val = String(e.target.value);
+        const time = val.split(':');
+        let newDate = new Date(inputTask.due);
+        newDate.setHours(time[0], time[1]);
+        setInputTask({ ...inputTask, due: newDate });
+    }
+
+    function handleDescChange(e) {
+        const val = String(e.target.value);
+        setInputTask({ ...inputTask, description: val })
     }
 
     return (
@@ -117,19 +118,12 @@ function List() {
                     t.status === status && <Task key={t.id} task={t} onTaskClick={handleRightClick} />)
                 }
             </section>
-            <form className='task-form container' onSubmit={e => handleSubmit(e)}>
-                <div className='task-form__left'>
-                    <input className='task-form__item' name='description'
-                        onChange={e => handleInputChange(e)} type='text' required></input>
-                    <div className='task-form__datetime'>
-                        <input className='task-form__item' name='date'
-                            onChange={e => handleInputChange(e)} type='date' required></input>
-                        <input className='task-form__item' name='time'
-                            onChange={e => handleInputChange(e)} type='time' required></input>
-                    </div>
-                </div>
-                <button className='task-form__submit' type='submit'>Add</button>
-            </form>
+            <TaskForm 
+                onDateChange={handleDateChange}
+                onDescChange={handleDescChange}
+                onTimeChange={handleTimeChange}
+                onSubmit={handleSubmit}
+            />
         </main>
     );
 }
