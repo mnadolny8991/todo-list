@@ -47,7 +47,6 @@ let id = 6;
 function List() {
     const [status, setStatus] = useState('planned');
     const [tasks, setTasks] = useState(initialTasks);
-
     const [inputTask, setInputTask] = useState({ status: 'planned' });
 
     function statusEntryClassNames(entry) {
@@ -57,15 +56,28 @@ function List() {
 
     function handleStatusEntryClick(e) {
         setStatus(String(e.target.innerHTML).toLowerCase());
+        console.log(String(e.target.innerHTML).toLowerCase());
+        // setStatus('in progress');
     }
 
     function handleRightClick(e, id) {
+        let newStatus = 'planned';
         setTasks(tasks.map(t => {
             if (t.id === id) {
-                let newStatus = ''
                 if (t.status === 'planned') newStatus = 'in progress';
                 else if (t.status === 'in progress') newStatus = 'complete';
-                setStatus(newStatus);
+                return { ...t, status: newStatus };
+            }
+            return t;
+        }));
+    }
+
+    function handleLeftClick(e, id) {
+        let newStatus = 'complete';
+        setTasks(tasks.map(t => {
+            if (t.id === id) {
+                if (t.status === 'complete') newStatus = 'in progress';
+                else if (t.status === 'in progress') newStatus = 'planned';
                 return { ...t, status: newStatus };
             }
             return t;
@@ -83,7 +95,7 @@ function List() {
         const date = val.split('-');
         let newDate = new Date(inputTask.due);
         newDate.setFullYear(date[0]);
-        newDate.setMonth(date[1]);
+        newDate.setMonth(date[1] - 1);
         newDate.setDate(date[2]);
         setInputTask({ ...inputTask, due: newDate })
     }
@@ -115,7 +127,8 @@ function List() {
             </ul>
             <section className='tasks container'>
                 { tasks.map(t => 
-                    t.status === status && <Task key={t.id} task={t} onTaskClick={handleRightClick} />)
+                    (t.status === status) && <Task key={t.id} task={t} onRightClick={handleRightClick}
+                    onLeftClick={handleLeftClick} />)
                 }
             </section>
             <TaskForm 

@@ -22,7 +22,7 @@ body {
   margin: auto;
   background-color: #FFFFFF;
   color: #444;
-  height: 100vh;
+  min-height: 100vh;
   border-radius: 10px;
 }
 
@@ -32,7 +32,8 @@ body {
 
 .status__entry {
   padding: 0px 10px 0px 10px;
-  font-size: 20px;
+  font-size: 15px;
+  font-weight: bold;
 }
 
 .status__entry:hover {
@@ -63,11 +64,13 @@ body {
   align-items: center;
   border: 1px solid #888;
   box-shadow: 5px 5px 5px #DDD;
-  border-radius: 20px;
+  border-radius: 5px;
+  background-color: #777;
+  color: #DDD;
 }
 
 .task__due {
-  font-size: medium;
+  font-size: 14px;
 }
 
 .task__right {
@@ -77,17 +80,30 @@ body {
   align-items: center;
 }
 
+.task__left {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+
+.task__title {
+  color: white;
+}
+
 .task__push {
 }
 
-.task__push:hover {
-  transform: scale(1.2, 1.2);
-  transition: 0.2s;
+.task__push-left {
+  transform: rotate(180deg);
+}
+
+.task__push-left:hover {
   cursor: pointer;
 }
 
-.task__push:active {
-  
+.task__push-right {
+  cursor: pointer;
 }
 
 .task-form {

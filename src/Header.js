@@ -8,7 +8,7 @@ function Header() {
                     fontSize: '60px'
                 }
             }>TODO LIST</h1>
-            <hr style={{ marginTop: '0' }}></hr>
+            <hr style={{ marginTop: '0', marginBottom: '2rem' }}></hr>
         </header>
     );
 }

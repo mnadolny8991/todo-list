@@ -1,28 +1,45 @@
 import right from './right.png';
 
-function getRemainingTime(due) {
-    let date1 = new Date();
-    let date2 = due;
-    let diff = new Date(date2.getTime() - date1.getTime());
+function getRemainingTime(start, end) {
+    let timeDiff = end.getTime() - start.getTime();
+    const oneDay = 1000 * 60 * 60 * 24;
+    let days = Math.floor(timeDiff / oneDay);
+    let years = Math.floor(days / 365.25);
+    days -= years * 365.25;
+    let months = Math.floor(days / 30.44);
+    days -= months * 30.44;
 
-    let years = diff.getUTCFullYear() - 1970;
-    let months = diff.getUTCMonth();
-    let days = diff.getUTCDate()-1;
+    years = Math.round(years);
+    months = Math.round(months);
+    days = Math.round(days);
 
-    return [years, months, days];
+    return {
+        years: years,
+        months: months,
+        days: days
+    };
 }
 
-function Task({ task, onTaskClick }) {
+function Task({ task, onRightClick, onLeftClick }) {
 
     function formatDate(date) {
-        const [years, months, days] = getRemainingTime(date);
-        const notActual = years < 0 || months < 0 || days < 0
-        const remainingString = notActual ? " time passed" 
-            : ` (${years > 0 ? years + " years, " : ""}` +
-              `${months > 0 ? months + " months, " : ""}` + 
-              `${days > 0 ? days + " days" : ""} remaining)`;
-        return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}` +
-            remainingString;
+        const now = new Date();
+        if (now.getTime() > date.getTime()) {
+            return 'after deadline';
+        }
+        const remains = getRemainingTime(now, date);
+        let remainsString = '';
+        if (remains.years !== 0) {
+            remainsString += `${remains.years} years, `;
+        }
+        if (remains.months !== 0) {
+            remainsString += `${remains.months} months, `;
+        }
+        if (remains.days !== 0) {
+            remainsString += `${remains.days} days`;
+        }
+        if (remainsString === '') remainsString = '0 days';
+        return remainsString;
     }
 
     function formatHour(date) {
@@ -36,11 +53,24 @@ function Task({ task, onTaskClick }) {
         <div>
             <article className='tasks__task'>
                 <div className='task__left'>
-                    <div className='task__title'>{task.description}</div>
-                    <div className='task__due'>
-                        {
-                            formatDate(task.due)
-                        }
+                    {task.status !== 'planned' && 
+                            <img  
+                                onClick={(e, id) => onLeftClick(e, task.id)}
+                                className='task__push-left' 
+                                width='15px' 
+                                src={right} 
+                                alt='right'>
+                            </img>}
+                    <div class='task__info'>
+                        <div className='task__title'>{task.description}</div>
+                        <div className='task__due'>
+                            {task.due.toDateString()}
+                        </div>
+                        <div className='task__due'>
+                            {
+                                formatDate(task.due)
+                            }
+                        </div>
                     </div>
                 </div>
                 <div className='task__right'>
@@ -48,8 +78,8 @@ function Task({ task, onTaskClick }) {
                         {formatHour(task.due)}
                     </div>
                     {task.status !== 'complete' && 
-                        <img onClick={e => onTaskClick(e, task.id)} 
-                            className='task__push' width='15px' src={right} alt='right'></img>}
+                        <img onClick={e => onRightClick(e, task.id)} 
+                            className='task__push-right' width='15px' src={right} alt='right'></img>}
                 </div>
             </article>
         </div>
