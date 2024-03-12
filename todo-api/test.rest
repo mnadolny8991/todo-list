@@ -1,6 +1,6 @@
 POST http://localhost:9000/tasks
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjAsImxvZ2luIjoidXNlcjEyM2EiLCJpYXQiOjE3MTAxNjA1NzZ9.34gsrMlh4oJ-o1SbolIOCMm7FYPDGfFO-XXIja2dFz8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImxvZ2luIjoibWljaGFsMTIzYSIsImlhdCI6MTcxMDI0ODQzNn0.cfzYUDNlHggAWxT88cZk_6k7gQz_UxlV72xVWkrDQMw
 
 {
     "description": "Start a task in progress",
@@ -18,8 +18,8 @@ POST http://localhost:9000/users
 Content-Type: application/json
 
 {
-    "login": "user123a",
-    "password": "admin1234"
+    "login": "michal123a",
+    "password": "notanadmin"
 }
 
 ###
@@ -28,11 +28,11 @@ POST http://localhost:9000/login
 Content-Type: application/json
 
 {
-    "login": "user123a",
-    "password": "admin1234"
+    "login": "michal123a",
+    "password": "notanadmin"
 }
 
 ###
 
 GET http://localhost:9000/tasks
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjAsImxvZ2luIjoidXNlcjEyM2EiLCJpYXQiOjE3MTAxNjQwNTR9.kZwS7_tVXRbacx-RRaccf0WZrCfqmJXzNmtscEriEhI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImxvZ2luIjoibWljaGFsMTIzYSIsImlhdCI6MTcxMDI0ODQzNn0.cfzYUDNlHggAWxT88cZk_6k7gQz_UxlV72xVWkrDQMw

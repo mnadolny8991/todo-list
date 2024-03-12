@@ -2,24 +2,18 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const pgp = require('pg-promise')();
-const db = pgp('postgres://postgres:postgres@127.0.0.1:5432/task_db');
+const db = require('./database');
 
 const app = express();
-
-let uid = 0;
 
 app.use(express.json());
 app.use(cors());
 
-let { tasks, users, id } = require('./data');
-
-app.post('/tasks', authorize, (req, res) => {
+app.post('/tasks', authorize, async (req, res) => {
     const task = { 
-        id: id++,
         description: req.body.description,
         due: req.body.due,
-        status: req.body.status 
+        status: req.body.status,
     };
     if (!task.description || !task.due) {
         return res.sendStatus(400);
@@ -28,18 +22,18 @@ app.post('/tasks', authorize, (req, res) => {
 
     // Get user id from jwt token
     task.userId = req.payload.sub;
-
-    tasks.push(task);
+    await db.addTask(task);
     res.sendStatus(201);
 });
 
-app.get('/tasks', authorize, (req, res) => {
-    res.json(tasks.filter(t => t.userId === req.payload.sub));
+app.get('/tasks', authorize, async (req, res) => {
+    const tasks = await db.getTasks(req.payload.sub);
+    res.json(tasks);
 });
 
 app.get('/users', async (req, res) => {
-    const data = await db.any('SELECT * FROM users');
-    console.log(data);
+    const users = await db.getUsers();
+    res.json(users);
 });
 
 app.post('/users', async (req, res) => {
@@ -52,8 +46,7 @@ app.post('/users', async (req, res) => {
     }
     try {
         const hash = await bcrypt.hash(userData.password, 10);
-        users.push({ 
-            id: uid++,
+        await db.addUser({
             login: userData.login,
             password: hash
         });
@@ -61,19 +54,6 @@ app.post('/users', async (req, res) => {
     } catch (e) {
         res.status(500).send(e);
     }
-});
-
-app.get('/users', async (req, res) => {
-    try {
-        console.log('hhhh');
-        const data = await db.any('SELECT * FROM users');
-        console.log('eee');
-        console.log(data);
-    } catch (e) {
-        console.log('error');
-        console.log|(e);
-    }
-    res.json(users);
 });
 
 app.post('/login', authenticate, async (req, res) => {
@@ -97,7 +77,7 @@ async function authenticate(req, res, next) {
     if (!userData.login || !userData.password) {
         return res.status(400).send('login and password required');
     }
-    const user = users.find(u => u.login === userData.login);
+    const user = await db.getUserByLogin(userData.login);
     if (!user) {
         return res.status(400).send('bad login');
     }
