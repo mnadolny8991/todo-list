@@ -1,53 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Task from './Task';
 import TaskForm from './TaskForm';
 
 const statuses = ['Planned', 'In Progress', 'Complete'];
-const initialTasks = [
-    {
-        id: 0,
-        description: 'Do the loundary',
-        due: new Date(2024, 2, 29, 23, 59, 59),
-        status: 'complete'
-    },
-    {
-        id: 1,
-        description: 'Become software engineer',
-        due: new Date(2025, 5, 20, 22, 0, 0, 0),
-        status: 'in progress'
-    },
-    {
-        id: 2,
-        description: 'Finish your thesis',
-        due: new Date(2026, 5, 20, 22, 0, 0, 0),
-        status: 'complete'
-    },
-    {
-        id: 3,
-        description: 'Beat the world record',
-        due: new Date(2029, 5, 20, 22, 0, 0, 0),
-        status: 'in progress'
-    },
-    {
-        id: 4,
-        description: 'Become an educated genleman',
-        due: new Date(2024, 5, 20, 22, 0, 0, 0),
-        status: 'planned'
-    },
-    {
-        id: 5,
-        description: 'Start a new business',
-        due: new Date(2024, 5, 20, 22, 0, 0, 0),
-        status: 'planned'
-    }
-]
-
-let id = 6; 
 
 function List() {
     const [status, setStatus] = useState('planned');
-    const [tasks, setTasks] = useState(initialTasks);
+    const [tasks, setTasks] = useState([]);
     const [inputTask, setInputTask] = useState({ status: 'planned' });
+
+    useEffect(() => {
+        async function fetchData() {
+            const resp = await fetch('http://localhost:9000/tasks', {
+                headers: {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjAsImxvZ2luIjoidXNlcjEyM2EiLCJpYXQiOjE3MTAxNjA1NzZ9.34gsrMlh4oJ-o1SbolIOCMm7FYPDGfFO-XXIja2dFz8"
+                }
+            });
+            let data = await resp.json();
+            data.forEach(d => {
+                d.due = new Date(d.due);
+            });
+            console.log(data);
+            setTasks(data);
+        }
+
+        fetchData()
+    }, [status]);
 
     function statusEntryClassNames(entry) {
         return 'status__entry ' + 
@@ -86,7 +64,7 @@ function List() {
 
     function handleSubmit(e) {
         e.preventDefault();
-        setTasks([...tasks, {...inputTask, id: id++}]);
+        // setTasks([...tasks, {...inputTask, id: id++}]);
         setStatus('planned');
     }
 
