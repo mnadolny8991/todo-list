@@ -8,6 +8,7 @@ function List() {
     const [status, setStatus] = useState('planned');
     const [tasks, setTasks] = useState([]);
     const [inputTask, setInputTask] = useState({ status: 'planned' });
+    const [added, setAdded] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -20,12 +21,12 @@ function List() {
             data.forEach(d => {
                 d.due = new Date(d.due);
             });
-            console.log(data);
             setTasks(data);
         }
 
-        fetchData()
-    }, [status]);
+        fetchData();
+        setAdded(false);
+    }, [status, added]);
 
     function statusEntryClassNames(entry) {
         return 'status__entry ' + 
@@ -38,7 +39,22 @@ function List() {
         // setStatus('in progress');
     }
 
-    function handleRightClick(e, id) {
+    async function updateStatusDb(taskId, newStatus) {
+        if (newStatus === 'in progress') newStatus = 'in_progress';
+        try {
+            await fetch(`http://localhost:9000/tasks/${ taskId }/${ newStatus }`, { 
+                method: 'PATCH',
+                headers: {
+                    "Authorization": 
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjAsImxvZ2luIjoidXNlcjEyM2EiLCJpYXQiOjE3MTAxNjA1NzZ9.34gsrMlh4oJ-o1SbolIOCMm7FYPDGfFO-XXIja2dFz8"
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async function handleRightClick(e, id) {
         let newStatus = 'planned';  
         setTasks(tasks.map(t => {
             if (t.id === id) {
@@ -48,23 +64,37 @@ function List() {
             }
             return t;
         }));
+        await updateStatusDb(id, newStatus);
+        console.log('I am reaching this point');
+        setStatus(newStatus);
     }
 
-    function handleLeftClick(e, id) {
+    async function handleLeftClick(e, id) {
         let newStatus = 'complete';
         setTasks(tasks.map(t => {
             if (t.id === id) {
                 if (t.status === 'complete') newStatus = 'in progress';
-                else if (t.status === 'in progress') newStatus = 'planned';
+                else if (t.status === 'in progress') newStatus = 'planned';    
                 return { ...t, status: newStatus };
             }
             return t;
         }));
+        await updateStatusDb(id, newStatus);
+        setStatus(newStatus);
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
-        // setTasks([...tasks, {...inputTask, id: id++}]);
+        const newTask = { ...inputTask, due: inputTask.due.toISOString() };
+        await fetch('http://localhost:9000/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjAsImxvZ2luIjoidXNlcjEyM2EiLCJpYXQiOjE3MTAxNjA1NzZ9.34gsrMlh4oJ-o1SbolIOCMm7FYPDGfFO-XXIja2dFz8',  
+                },
+                body: JSON.stringify(newTask)
+            });
+        setAdded(true);
         setStatus('planned');
     }
 

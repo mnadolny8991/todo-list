@@ -9,12 +9,23 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.patch('/tasks/:id/:status', authorize, async (req, res) => {
+    const id = req.params.id;
+    let status = req.params.status;
+    if (status === 'in_progress') status = 'in progress';
+    console.log(`${id}: ${status}`);
+    await db.setTaskStatus(id, status);
+    console.log('status updated successfully');
+    return res.sendStatus(200);
+})
+
 app.post('/tasks', authorize, async (req, res) => {
     const task = { 
         description: req.body.description,
         due: req.body.due,
         status: req.body.status,
     };
+    console.log(task);
     if (!task.description || !task.due) {
         return res.sendStatus(400);
     }

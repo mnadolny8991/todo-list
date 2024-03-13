@@ -24,6 +24,10 @@ async function getUserByLogin(login) {
     return found[0];
 }
 
+async function setTaskStatus(taskId, newStatus) {
+    await db.none('UPDATE tasks SET status = $1 WHERE id = $2', [newStatus, taskId]);
+}
+
 async function test() {
     await addUser({ login: 'marcin', password: '$2b$10$m72FxxJgZbfBmSesy9NWiuWMCeuJ9fNziuH5Yrt.99yuSF.Vtk6e.' });
     const users = await(getUsers());
@@ -43,5 +47,6 @@ module.exports = {
     getTasks, 
     addTask, 
     addUser,
-    getUserByLogin
+    getUserByLogin,
+    setTaskStatus
 };
