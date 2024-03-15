@@ -4,29 +4,34 @@ import TaskForm from './TaskForm';
 
 const statuses = ['Planned', 'In Progress', 'Complete'];
 
-function List() {
+function List({ token }) {
     const [status, setStatus] = useState('planned');
     const [tasks, setTasks] = useState([]);
     const [inputTask, setInputTask] = useState({ status: 'planned' });
     const [added, setAdded] = useState(false);
 
     useEffect(() => {
+        console.log('list ' + token);
         async function fetchData() {
-            const resp = await fetch('http://localhost:9000/tasks', {
-                headers: {
-                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjAsImxvZ2luIjoidXNlcjEyM2EiLCJpYXQiOjE3MTAxNjA1NzZ9.34gsrMlh4oJ-o1SbolIOCMm7FYPDGfFO-XXIja2dFz8"
-                }
-            });
-            let data = await resp.json();
-            data.forEach(d => {
-                d.due = new Date(d.due);
-            });
-            setTasks(data);
+            try {
+                const resp = await fetch('http://localhost:9000/tasks', {
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
+                let data = await resp.json();
+                data.forEach(d => {
+                    d.due = new Date(d.due);
+                });
+                setTasks(data);
+            } catch {
+                setTasks([]);
+            }
         }
 
         fetchData();
         setAdded(false);
-    }, [status, added]);
+    }, [status, added, token]);
 
     function statusEntryClassNames(entry) {
         return 'status__entry ' + 
@@ -44,9 +49,8 @@ function List() {
         try {
             await fetch(`http://localhost:9000/tasks/${ taskId }/${ newStatus }`, { 
                 method: 'PATCH',
-                headers: {
-                    "Authorization": 
-                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjAsImxvZ2luIjoidXNlcjEyM2EiLCJpYXQiOjE3MTAxNjA1NzZ9.34gsrMlh4oJ-o1SbolIOCMm7FYPDGfFO-XXIja2dFz8"
+                headers: { 
+                    "Authorization": "Bearer " + token
                 }
             });
         } catch (e) {
@@ -65,7 +69,6 @@ function List() {
             return t;
         }));
         await updateStatusDb(id, newStatus);
-        console.log('I am reaching this point');
         setStatus(newStatus);
     }
 
@@ -90,7 +93,7 @@ function List() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjAsImxvZ2luIjoidXNlcjEyM2EiLCJpYXQiOjE3MTAxNjA1NzZ9.34gsrMlh4oJ-o1SbolIOCMm7FYPDGfFO-XXIja2dFz8',  
+                    "Authorization": "Bearer " + token
                 },
                 body: JSON.stringify(newTask)
             });
@@ -121,6 +124,21 @@ function List() {
         setInputTask({ ...inputTask, description: val })
     }
 
+    async function handleDeleteClick(e, id) {
+        await fetch(`http://localhost:9000/tasks/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+        setAdded(true);
+    }
+
+    async function handleEditClick(e, id) {
+        // const task = [...tasks].find(t => t.id === id);
+        
+    }
+
     return (
         <main>
             <ul className='status container'>
@@ -135,15 +153,18 @@ function List() {
             </ul>
             <section className='tasks container'>
                 { tasks.map(t => 
-                    (t.status === status) && <Task key={t.id} task={t} onRightClick={handleRightClick}
-                    onLeftClick={handleLeftClick} />)
+                    (t.status === status) && <Task key={t.id} task={t} 
+                    onRightClick={handleRightClick}
+                    onLeftClick={handleLeftClick} 
+                    onDeleteClick={ handleDeleteClick }
+                    onEditClick={ handleEditClick }/>)
                 }
             </section>
             <TaskForm 
-                onDateChange={handleDateChange}
-                onDescChange={handleDescChange}
-                onTimeChange={handleTimeChange}
-                onSubmit={handleSubmit}
+                onDateChange={ handleDateChange }
+                onDescChange={ handleDescChange }
+                onTimeChange={ handleTimeChange }
+                onSubmit={ handleSubmit }
             />
         </main>
     );

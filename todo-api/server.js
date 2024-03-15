@@ -9,13 +9,16 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.delete('/tasks/:id', authorize, async (req, res) => {
+    await db.deleteTask(req.params.id);
+    return res.sendStatus(200);
+});
+
 app.patch('/tasks/:id/:status', authorize, async (req, res) => {
     const id = req.params.id;
     let status = req.params.status;
     if (status === 'in_progress') status = 'in progress';
-    console.log(`${id}: ${status}`);
     await db.setTaskStatus(id, status);
-    console.log('status updated successfully');
     return res.sendStatus(200);
 })
 
@@ -76,7 +79,7 @@ app.post('/login', authenticate, async (req, res) => {
         login: user.login
     }, 'shhhhh', function(err, token) {
         if (err) return res.status(500).send('unable to create token');
-        res.send(token);
+        res.status(200).send(token);
     });
 });
 

@@ -20,7 +20,7 @@ function getRemainingTime(start, end) {
     };
 }
 
-function Task({ task, onRightClick, onLeftClick }) {
+function Task({ task, onRightClick, onLeftClick, onDeleteClick, onEditClick }) {
 
     function formatDate(date) {
         const now = new Date();
@@ -72,6 +72,8 @@ function Task({ task, onRightClick, onLeftClick }) {
                             }
                         </div>
                     </div>
+                    <button className='task__btn task__btn--delete' onClick={e => onDeleteClick(e, task.id)}>Delete</button>
+                    <button className='task__btn task__btn--update' onClick={e => onEditClick(e, task.id)}>Edit</button>
                 </div>
                 <div className='task__right'>
                     <div>

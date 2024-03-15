@@ -35,9 +35,14 @@ Content-Type: application/json
 ###
 
 GET http://localhost:9000/tasks
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImxvZ2luIjoibWljaGFsMTIzYSIsImlhdCI6MTcxMDI0ODQzNn0.cfzYUDNlHggAWxT88cZk_6k7gQz_UxlV72xVWkrDQMw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImxvZ2luIjoibWljaGFsMTIzYSIsImlhdCI6MTcxMDUwNjc3NH0.wfDGsKyQSgb6OkLTiFBmtVxUhF330ZLCNCbf1bKpVYc
 
 ###
 
 PATCH http://localhost:9000/tasks/7/complete
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjAsImxvZ2luIjoidXNlcjEyM2EiLCJpYXQiOjE3MTAxNjA1NzZ9.34gsrMlh4oJ-o1SbolIOCMm7FYPDGfFO-XXIja2dFz8
+
+###
+
+DELETE http://localhost:9000/tasks/13/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjAsImxvZ2luIjoidXNlcjEyM2EiLCJpYXQiOjE3MTAxNjA1NzZ9.34gsrMlh4oJ-o1SbolIOCMm7FYPDGfFO-XXIja2dFz8

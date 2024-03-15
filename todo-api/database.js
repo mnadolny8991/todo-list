@@ -28,18 +28,8 @@ async function setTaskStatus(taskId, newStatus) {
     await db.none('UPDATE tasks SET status = $1 WHERE id = $2', [newStatus, taskId]);
 }
 
-async function test() {
-    await addUser({ login: 'marcin', password: '$2b$10$m72FxxJgZbfBmSesy9NWiuWMCeuJ9fNziuH5Yrt.99yuSF.Vtk6e.' });
-    const users = await(getUsers());
-    await addTask({ 
-        description: 'Learn C',
-        due: new Date('2026-03-03T03:00:00Z').toISOString(),
-        status: 'complete',
-        userId: '0'
-    });
-    const userTasks = await(getTasks(0));
-    console.log(users);
-    console.log(userTasks);
+async function deleteTask(taskId) {
+    await db.none('DELETE FROM tasks WHERE id = $1', taskId);
 }
 
 module.exports = {
@@ -48,5 +38,6 @@ module.exports = {
     addTask, 
     addUser,
     getUserByLogin,
-    setTaskStatus
+    setTaskStatus,
+    deleteTask
 };

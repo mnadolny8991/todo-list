@@ -57,7 +57,7 @@ body {
 .tasks__task {
   font-size: 20px;
   margin-top: 2px;
-  padding: 1rem;
+  padding: 2rem 3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -155,6 +155,40 @@ body {
 .task-form__submit:active {
   transform: scale(1.2, 1.2);
   transition: 0.2s;
+}
+
+.task__btn {
+  all: unset;
+  border: 2px solid white;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  border-radius: 10px;
+  background-color: none;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.task__btn--delete:hover {
+  cursor: pointer;
+  border-color:rgb(219, 109, 109);
+  transition: .4s;
+}
+
+.task__btn--delete:active {
+  background-color: rgb(219, 109, 109);
+  transition: .4s;
+}
+
+.task__btn--update:hover {
+  cursor: pointer;
+  border-color:rgb(119, 164, 228);
+  transition: .4s;
+}
+
+.task__btn--update:active {
+  background-color: rgb(119, 164, 228);
+  transition: .4s;
 }
 
 @media (max-width: 800px) {
